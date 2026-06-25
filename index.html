@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MGEN - Copilote d'IA de Gouvernance & Qualité des Données</title>
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="./style.css">
+    <!-- FontAwesome para iconografía moderna -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- AlaSQL - Moteur SQL léger dans le navigateur -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/alasql/4.4.0/alasql.min.js"></script>
+</head>
+<body>
+    <div class="workspace-container">
+        <!-- PANNEAU GAUCHE : AGENT DE GOUVERNANCE IA (CONVERSATIONNEL) -->
+        <section class="agent-chat-panel">
+            <header class="chat-header">
+                <div class="agent-profile">
+                    <div class="agent-avatar">
+                        AI
+                        <span class="agent-status-dot"></span>
+                    </div>
+                    <div class="agent-title-section">
+                        <span class="agent-name">MGEN Governance Steward</span>
+                        <span class="agent-subtitle"><i class="fa-solid fa-robot"></i> Copilote IA de Gouvernance</span>
+                    </div>
+                </div>
+                <div>
+                    <button class="action-pill" id="theme-toggle"><i class="fa-solid fa-sun"></i> Thème</button>
+                </div>
+            </header>
+
+            <!-- Zone des messages de chat -->
+            <div class="chat-messages" id="chat-box">
+                <!-- Rempli dynamiquement par app.js -->
+            </div>
+
+            <!-- Suggestions d'actions rapides -->
+            <div class="quick-actions">
+                <button class="action-pill" onclick="sendQuickMessage('Auditer la qualité pour l\'IA')">
+                    <i class="fa-solid fa-shield-halved text-success"></i> Auditer la Qualité IA
+                </button>
+                <button class="action-pill" onclick="sendQuickMessage('Aide OpenMetadata')">
+                    <i class="fa-solid fa-graduation-cap text-info"></i> Aide OpenMetadata
+                </button>
+                <button class="action-pill" onclick="sendQuickMessage('Documenter la table remboursements')">
+                    <i class="fa-solid fa-pen-to-square text-warning"></i> Documenter remboursements
+                </button>
+                <button class="action-pill" onclick="sendQuickMessage('Rédiger un test SQL')">
+                    <i class="fa-solid fa-terminal text-purple"></i> Rédiger un test SQL
+                </button>
+            </div>
+
+            <!-- Saisie de l'utilisateur -->
+            <div class="chat-input-area">
+                <div class="chat-input-wrapper">
+                    <textarea class="chat-textarea" id="chat-input" placeholder="Posez une question sur OpenMetadata ou demandez un audit SQL..." rows="1"></textarea>
+                    <button class="send-btn" id="send-btn">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- PANNEAU DROIT : CATALOGUE & DQ CONSOLE (OPENMETADATA + DQ ASSERTIONS) -->
+        <main class="catalog-panel">
+            <header class="panel-header">
+                <div class="panel-title">
+                    <h1>Espace de Travail - Gouvernance MGEN</h1>
+                </div>
+                <div>
+                    <span class="badge badge-mgen" style="font-size: 0.8rem; padding: 0.4rem 0.8rem;">
+                        <i class="fa-solid fa-database"></i> SQLite-Memory : Connecté
+                    </span>
+                </div>
+            </header>
+
+            <!-- Onglets de l'espace de travail -->
+            <nav class="panel-tabs">
+                <button class="panel-tab-btn active" data-tab="tab-catalog">Dictionnaire (OpenMetadata)</button>
+                <button class="panel-tab-btn" data-tab="tab-quality" id="btn-tab-quality">Data Quality Assertions</button>
+                <button class="panel-tab-btn" data-tab="tab-sql" id="btn-tab-sql">Console de Remédiation SQL</button>
+            </nav>
+
+            <!-- CONTENU : ONGLET 1 - CATALOGUE -->
+            <div class="panel-tab-content active" id="tab-catalog">
+                <div class="catalog-layout">
+                    <!-- Liste des tables à gauche -->
+                    <aside>
+                        <ul class="tree-list">
+                            <li class="tree-item active" data-table="adherents">
+                                <i class="fa-solid fa-table text-info"></i>
+                                <span>adherents</span>
+                            </li>
+                            <li class="tree-item" data-table="remboursements">
+                                <i class="fa-solid fa-table text-info"></i>
+                                <span>remboursements</span>
+                            </li>
+                            <li class="tree-item" data-table="predictions_ia">
+                                <i class="fa-solid fa-brain text-success"></i>
+                                <span>predictions_ia</span>
+                            </li>
+                        </ul>
+                    </aside>
+
+                    <!-- Détails de la table sélectionnée -->
+                    <section class="card" style="margin-bottom: 0;">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                            <div>
+                                <h2 class="card-title" id="table-title" style="margin-bottom: 0.25rem;">adherents</h2>
+                                <p id="table-description" style="color: var(--text-secondary); font-size: 0.875rem;">Description en cours de chargement...</p>
+                            </div>
+                            <div id="table-badges">
+                                <!-- Badges dynamiques -->
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 1.5rem; margin-bottom: 1.5rem; font-size: 0.8rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+                            <div><strong style="color: var(--text-muted);">OWNER:</strong> <span id="table-owner" style="color: var(--text-primary);">Direction Data</span></div>
+                            <div><strong style="color: var(--text-muted);">CLASSIFICATION:</strong> <span id="table-classification" style="color: var(--text-primary);">Interne</span></div>
+                        </div>
+
+                        <!-- Colonnes -->
+                        <h3>Schéma & Documentation</h3>
+                        <div class="data-table-container m-t-2">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nom de Colonne</th>
+                                        <th>Type</th>
+                                        <th>Description</th>
+                                        <th>Glossaire & Tags</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="schema-table-body">
+                                    <!-- Rempli dynamiquement -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- CONTENU : ONGLET 2 - DATA QUALITY ASSERTIONS -->
+            <div class="panel-tab-content" id="tab-quality">
+                <div class="card">
+                    <div class="card-title">
+                        <i class="fa-solid fa-shield-halved text-success"></i> Registre d'Assertions de Qualité (Data Quality Registry)
+                    </div>
+                    <div class="data-table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Cible</th>
+                                    <th>Type de Règle</th>
+                                    <th>Définition SQL</th>
+                                    <th>Tolérance</th>
+                                    <th>Statut Actuel</th>
+                                </tr>
+                            </thead>
+                            <tbody id="quality-assertions-body">
+                                <!-- Rempli dynamiquement -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTENU : ONGLET 3 - CONSOLE DE REMÉDIATION SQL -->
+            <div class="panel-tab-content" id="tab-sql">
+                <div class="card">
+                    <div class="card-title">
+                        <i class="fa-solid fa-terminal text-info"></i> Commande de Remédiation exécutée par l'Agent
+                    </div>
+                    <div class="code-block" id="sql-console-query">
+                        -- En attente d'une commande de l'agent...
+                    </div>
+                    <div class="console-results">
+                        <h4 style="margin-bottom: 0.75rem;"><i class="fa-solid fa-database"></i> Résultats SQL en sortie</h4>
+                        <div class="data-table-container" id="console-table-container">
+                            <div style="color: var(--text-muted); font-style: italic; font-size: 0.85rem;" id="console-placeholder">
+                                Aucun résultat d'exécution SQL pour le moment. Demandez à l'agent d'exécuter un audit de données.
+                            </div>
+                            <table class="data-table" id="console-table" style="display: none;">
+                                <thead id="console-table-head">
+                                    <!-- Rempli dynamiquement -->
+                                </thead>
+                                <tbody id="console-table-body">
+                                    <!-- Rempli dynamiquement -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="./db_init.js"></script>
+    <script src="./agent_logic.js"></script>
+    <script src="./app.js"></script>
+</body>
+</html>
