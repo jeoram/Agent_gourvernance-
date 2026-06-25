@@ -1,6 +1,6 @@
 # 🤖 MGEN — Steward IA de Gouvernance & Qualité de Données
 
-> Projet réalisé dans le cadre de ma candidature au poste de **Chargé(e) de Gouvernance et Qualité des Données en alternance** à la **MGEN**.
+> Projet réalisé dans le cadre de la fusion entre les agents IA et la gouvernence des données pour automatisé et créer des prises de décision plus précises 
 
 Application web professionnelle intégrant un **Agent IA conversationnel (Chatbot Copilot)** pour automatiser les tâches quotidiennes de gouvernance de données : documentation OpenMetadata, assertions SQL de qualité, et diagnostic d'anomalies sur les données critiques alimentant les algorithmes d'Intelligence Artificielle (*Data-Centric AI*).
 
