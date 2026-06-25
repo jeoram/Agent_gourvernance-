@@ -1,85 +1,100 @@
-# MGEN - Steward IA de Gouvernance & Qualité de Données
+# 🤖 MGEN — Steward IA de Gouvernance & Qualité de Données
 
-Ce projet a été conçu dans le cadre de ma candidature pour le poste de **Chargé(e) de Gouvernance et Qualité des Données en alternance** à la **MGEN**.
+> Projet réalisé dans le cadre de ma candidature au poste de **Chargé(e) de Gouvernance et Qualité des Données en alternance** à la **MGEN**.
 
-Il s'agit d'une application de niveau professionnel qui intègre un **Agent IA conversationnel (Chatbot Copilot)** conçu pour aider les équipes métiers et techniques dans leurs tâches quotidiennes de gouvernance. L'agent interagit en langage naturel pour automatiser le dictionnaire de données (OpenMetadata), écrire des assertions SQL de qualité et diagnostiquer les anomalies sur les données critiques alimentant les algorithmes d'Intelligence Artificielle (*Data-Centric AI*).
+Application web professionnelle intégrant un **Agent IA conversationnel (Chatbot Copilot)** pour automatiser les tâches quotidiennes de gouvernance de données : documentation OpenMetadata, assertions SQL de qualité, et diagnostic d'anomalies sur les données critiques alimentant les algorithmes d'Intelligence Artificielle (*Data-Centric AI*).
 
 ---
 
-## 📸 Aperçu Visuel du Portail
+## 📸 Aperçu Visuel
 
 <div align="center">
-  <h3>Interface de Chat de l'Agent IA & Catalogue de Données</h3>
-  <img src="./agent_interface_mockup.png" width="800" alt="Agent IA Interface MGEN"/>
-  
-  <h3>Console de Remédiation SQL & Nettoyage de Base</h3>
-  <img src="./remediation_console_mockup.png" width="800" alt="Console SQL de Remédiation MGEN"/>
+
+### Interface Principale — Agent Chat & Catalogue de Données
+
+![Agent IA Interface MGEN](./screenshot_agent_chat.png)
+
+*L'agent répond en langage naturel et met à jour le tableau de bord en temps réel*
+
 </div>
 
 ---
 
-## 🎯 Alignement avec les exigences du poste MGEN
+## 🧠 Architecture Technique
 
-Ce projet illustre une approche moderne de la gouvernance, propulsée par l'Intelligence Artificielle, répondant précisément à la fiche de poste :
-
-1. **Mission Dictionnaire & Gouvernance (OpenMetadata)** :
-   - Au lieu de documenter manuellement, l'utilisateur peut demander à l'agent : *"Documente la table remboursements"*.
-   - L'agent génère instantanément des descriptions fonctionnelles appropriées, assigne les *Data Owners* et injecte les métadonnées directement dans le catalogue de droite.
-2. **Data Quality for AI (Golden Data)** :
-   - L'utilisateur peut demander : *"Fais un audit de la qualité pour l'IA"* ou *"Vérifie les données d'entrée de l'IA"*.
-   - L'agent exécute en mémoire un ensemble de règles de qualité (unicité, format, cohérence) sur les données transactionnelles et d'identité, affiche un rapport d'audit détaillé et alerte sur les risques d'apprentissage biaisé pour les modèles d'IA.
-3. **Accompagnement des Utilisateurs & SQL** :
-   - L'agent offre une **assistance fonctionnelle interactive** sur l'utilisation d'OpenMetadata (ex. *"Comment ajouter un tag RGPD ?"* ou *"C'est quoi une Golden Data ?"*).
-   - L'agent **génère et exécute lui-même du code SQL** de contrôle. Si vous lui demandez : *"Trouve les e-mails invalides"*, il écrit la requête SQL de sélection, l'exécute sur le moteur local et l'affiche sur l'interface de droite.
-
----
-
-## 🧠 Architecture de l'Agent de Gouvernance
-
-L'agent simule un processus de réflexion (*Thought process*) visible en direct par l'utilisateur (le "Journal d'activité"), permettant de comprendre comment l'IA formule ses requêtes SQL ou ses requêtes de métadonnées.
+→ **[Voir le document d'architecture complet](./ARCHITECTURE.md)** ← diagrammes Mermaid, pipeline, modèle de données
 
 ```mermaid
-flowchart TD
-    User([Utilisateur MGEN]) -->|Message en langage naturel| Agent[Agent IA de Gouvernance]
-    Agent -->|1. Analyse d'intention & NLP| Parser[Analyseur d'Intention]
-    Agent -->|2. Réflexion visible| Thought[Journal d'Activité de l'Agent]
-    
-    Parser -->|Intention: Audit / SQL| SQLEngine[Générateur de Requêtes SQL]
-    Parser -->|Intention: OpenMetadata| MetaEngine[Moteur de Métadonnées]
-    
-    SQLEngine -->|Requête SQL générée| DB[(Base en mémoire AlaSQL)]
-    MetaEngine -->|Modifie descriptions / Owners| Catalog[Catalogue OpenMetadata à l'écran]
-    
-    DB -->|Lignes d'anomalies détectées| UI[Mise à jour dynamique de l'interface]
-    Catalog -->|Actualisation instantanée| UI
-    
-    UI -->|Réponse formulée + Résultats| User
+flowchart LR
+    User(["👤 Utilisateur"])
+    -->|"Langage naturel"| Agent["🤖 Agent IA\n(NLP + Intent)"]
+
+    Agent -->|"Intent: audit"| SQL["🗄️ AlaSQL\n(SQLite mémoire)"]
+    Agent -->|"Intent: documenter"| Meta["📂 Catalogue\n(OpenMetadata)"]
+    Agent -->|"Intent: aide"| Help["📚 Fiche d'aide\nOpenMetadata"]
+
+    SQL -->|"Anomalies"| Console["⚙️ Console SQL"]
+    Meta -->|"Métadonnées"| Catalog["📋 Dictionnaire"]
+
+    Console & Catalog & Help -->|"Réponse"| User
 ```
 
 ---
 
-## 🛠️ Jeu de Données Factices & Anomalies
+## 🎯 Alignement avec les Missions du Poste MGEN
 
-Pour tester l'agent, la base en mémoire contient des données de santé réalistes (advent, remboursements, prédictions d'anomalies de remboursements par un modèle d'apprentissage) avec des anomalies injectées exprès :
-- **adherents** : Doublon d'adhérent (id: 1007), format d'e-mail incorrect, code postal trop court.
-- **remboursements** : Remboursement supérieur au montant facturé, montant de remboursement négatif, clé étrangère orpheline (id_adherent inexistant).
-- **predictions_ia** : Scores d'anomalie du modèle d'IA hors de l'intervalle `[0, 1]`, valeurs nulles inattendues.
-
-*Vous pouvez demander à l'agent de nettoyer tout cela en lui envoyant : **"Corrige les anomalies"**.*
-
----
-
-## 🚀 Lancement Local
-
-1. Ouvrez simplement le fichier `index.html` dans votre navigateur (Chrome, Firefox, Safari ou Edge).
-2. L'application est autonome : AlaSQL et FontAwesome se chargent via CDN. Aucune base de données ou serveur backend n'est requis.
+| Mission | Commande dans l'Agent | Résultat |
+|---|---|---|
+| 📖 **Dictionnaire OpenMetadata** | `"Documente la table remboursements"` | Injection auto de descriptions, tags RGPD, Data Owner |
+| 🎓 **Formation utilisateurs** | `"Aide OpenMetadata"` | Fiche interactive : tags, glossaires, data owners |
+| 🛡️ **Data Quality for AI** | `"Auditer la qualité pour l'IA"` | Rapport complet : 8 anomalies détectées sur 3 tables |
+| 🔍 **Identification anomalies** | `"Corrige les anomalies"` | SQL de remédiation généré et exécuté |
+| 💻 **Tests SQL** | `"Rédige un test SQL"` | Requête générée + exécutée + résultats affichés |
 
 ---
 
-## 🔗 Déploiement sur GitHub Pages
+## 🛠️ Stack Technologique
 
-Pour que les recruteurs MGEN accèdent à votre projet en un clic :
-1. Créez un nouveau dépôt public vide nommé `mgen-ai-governance-agent` sur votre profil GitHub.
-2. Initialisez et poussez les fichiers locaux en exécutant le script `deploy.ps1` (sur Windows / PowerShell) ou `deploy.sh` (sur Bash).
-3. Sur votre dépôt en ligne, allez dans **Settings** > **Pages**, choisissez la branche `main` et le dossier `/ (root)`, puis cliquez sur **Save**.
-4. Le projet sera en ligne à l'adresse : `https://<votre-pseudo>.github.io/mgen-ai-governance-agent/`.
+| Technologie | Rôle |
+|---|---|
+| **HTML5 / CSS3** | Interface glassmorphism, thème sombre professionnel |
+| **Vanilla JS (ES6+)** | Logique agent, NLP, manipulation DOM |
+| **AlaSQL 4.4** | Moteur SQL SQLite dans le navigateur (zéro backend) |
+| **FontAwesome 6.4** | Iconographie moderne |
+| **GitHub Pages** | Hébergement statique, zéro serveur |
+
+---
+
+## 🚨 Données de Test — Anomalies Injectées
+
+Le jeu de données simule des cas réels de mauvaise qualité impactant les modèles d'IA :
+
+| Table | Anomalie | Impact IA |
+|---|---|---|
+| `adherents` | Doublon `id=1007` | Biais d'entraînement |
+| `adherents` | Email format invalide | Enrichissement impossible |
+| `remboursements` | Montant remboursé > facturé | Faux positif modèle fraude |
+| `remboursements` | FK orpheline `id=9999` | Jointure silencieuse |
+| `predictions_ia` | Score > 1.0 | Erreur de normalisation |
+| `predictions_ia` | Confiance = NULL | Prédiction non fiable |
+
+---
+
+## 🚀 Lancer le Projet
+
+```bash
+# Ouvrez simplement index.html dans votre navigateur
+# Aucun serveur, aucune installation requise
+start index.html  # Windows
+open index.html   # Mac/Linux
+```
+
+> L'application est 100% autonome : AlaSQL et FontAwesome se chargent via CDN.
+
+---
+
+## 🔗 Liens
+
+- **GitHub Pages** : `https://jeoram.github.io/Agent_gourvernance-/`
+- **Autre projet** : [MGEN Data Governance Portal](https://github.com/jeoram/mgen-data-governance-portal)
+- **Profil GitHub** : [github.com/jeoram](https://github.com/jeoram)
